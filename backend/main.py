@@ -56,6 +56,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def health_check():
+    return {"status": "online", "message": "The Scaler Backend is running smoothly!"}
+
 # --- UTILITIES ---
 BASE62 = string.digits + string.ascii_letters 
 
