@@ -3,4 +3,3 @@ uvicorn
 redis
 sqlalchemy
 psycopg2-binary
-main.py
