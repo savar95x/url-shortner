@@ -1,18 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   ArrowRight, Activity, Terminal, Database, 
-  Zap, Play, Layout, Server, Copy 
+  Zap, Play, Layout, Server, Copy, Loader2 
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell 
 } from 'recharts';
 
 // --- CONFIGURATION ---
-// const API_BASE = "http://localhost:8000"; 
 const API_BASE = "https://url-shortner-backend-bhvv.onrender.com"; 
-
-// Set this to "/url-shortner" if deploying to https://apps.savar.is-a.dev/url-shortner
-// Keep as "" for localhost or root domain deployments
 const ROUTER_BASE = "";
 
 export default function App() {
@@ -21,7 +17,8 @@ export default function App() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [analytics, setAnalytics] = useState([]);
-  const [isRedirecting, setIsRedirecting] = useState(false); 
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const [isWakingUp, setIsWakingUp] = useState(true); // New state for initial connection
   const logsEndRef = useRef(null);
 
   useEffect(() => {
@@ -84,6 +81,7 @@ export default function App() {
       if (urlsRes.ok) {
         const data = await urlsRes.json();
         setGeneratedLinks(data);
+        setIsWakingUp(false); // Backend is awake!
       }
       const statsRes = await fetch(`${API_BASE}/api/analytics`);
       if (statsRes.ok) {
@@ -91,7 +89,7 @@ export default function App() {
         setAnalytics(data);
       }
     } catch (err) {
-      console.warn("Polling failed", err);
+      console.warn("Polling failed - Backend might be sleeping", err);
     }
   };
 
@@ -123,7 +121,6 @@ export default function App() {
       
       const fullShortUrl = `${window.location.origin}${ROUTER_BASE}/${data.short_code}`;
       
-      // LOGIC UPDATE: Check if it existed
       if (data.existed) {
         addLog(`Found Existing: ${fullShortUrl}`, "warning", latency);
       } else {
@@ -199,8 +196,10 @@ export default function App() {
           </div>
         </div>
         <div className="flex items-center gap-2 px-3 py-1 rounded bg-[#111] border border-[#222]">
-           <div className={`w-2 h-2 rounded-full ${generatedLinks.length > 0 ? 'bg-emerald-500' : 'bg-yellow-500'} animate-pulse`}></div>
-           <span className="text-[10px] font-mono text-neutral-400 uppercase">Live</span>
+           <div className={`w-2 h-2 rounded-full ${!isWakingUp ? 'bg-emerald-500' : 'bg-yellow-500'} animate-pulse`}></div>
+           <span className="text-[10px] font-mono text-neutral-400 uppercase">
+             {isWakingUp ? "Connecting..." : "Live"}
+           </span>
         </div>
       </header>
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
@@ -209,13 +208,16 @@ export default function App() {
             <h2 className="text-xs font-mono text-neutral-500 uppercase tracking-widest mb-4 flex items-center gap-2"><Zap className="w-3 h-3" /> Generator</h2>
             <form onSubmit={handleShorten} className="space-y-4">
               <input type="url" required placeholder="https://..." className="w-full bg-[#0f0f0f] border border-[#222] rounded p-3 text-sm font-mono text-white focus:border-blue-900 focus:outline-none" value={longUrl} onChange={(e) => setLongUrl(e.target.value)} />
-              <button disabled={loading} className="w-full bg-white text-black hover:bg-neutral-200 disabled:opacity-50 text-xs font-bold uppercase tracking-widest py-3 rounded flex items-center justify-center gap-2">{loading ? "Processing..." : "Shorten URL"} <ArrowRight className="w-3 h-3" /></button>
+              <button disabled={loading || isWakingUp} className="w-full bg-white text-black hover:bg-neutral-200 disabled:opacity-50 text-xs font-bold uppercase tracking-widest py-3 rounded flex items-center justify-center gap-2">
+                {isWakingUp ? "Server Waking Up..." : loading ? "Processing..." : "Shorten URL"} 
+                {isWakingUp ? <Loader2 className="w-3 h-3 animate-spin" /> : <ArrowRight className="w-3 h-3" />}
+              </button>
             </form>
           </div>
           <div className="flex-1 flex flex-col overflow-hidden">
              <div className="px-6 py-3 border-b border-[#222] bg-[#0a0a0a] flex justify-between items-center"><h2 className="text-xs font-mono text-neutral-500 uppercase flex items-center gap-2"><Database className="w-3 h-3" /> Records</h2></div>
              <div className="flex-1 overflow-y-auto p-2 space-y-1">
-                {generatedLinks.length === 0 && <div className="text-center py-8 text-neutral-700 text-xs font-mono">{loading ? "Loading..." : "No links yet"}</div>}
+                {generatedLinks.length === 0 && <div className="text-center py-8 text-neutral-700 text-xs font-mono">{isWakingUp ? "Connecting to Backend..." : "No links yet"}</div>}
                 {generatedLinks.map((link) => (
                   <div key={link.short_code} className="group p-3 rounded border border-transparent hover:border-[#333] hover:bg-[#111] cursor-default">
                     <div className="flex justify-between items-center mb-1">
