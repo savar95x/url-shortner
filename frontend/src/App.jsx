@@ -190,12 +190,16 @@ export default function App() {
       <header className="h-14 border-b border-[#222] flex items-center justify-between px-4 bg-[#0a0a0a] shrink-0">
         <div className="flex items-center gap-4">
           <a href="https://savar.is-a.dev" target="_blank" rel="noopener noreferrer" className="font-serif italic text-lg tracking-wide pr-4 border-r border-[#222] hover:text-white transition-colors">Savar</a>
-          <div className="flex items-center gap-2 text-xs font-mono text-neutral-500">
-            <Github className="w-3 h-3" />
-            <a className="hidden sm:inline uppercase" target="_blank" href="https://github.com/savar95x/url-shortner">Source</a>
-            <span className="text-neutral-700 hidden sm:inline">/</span>
-            <ExternalLink color="white" className="w-3 h-3" />
-            <a className="text-white uppercase" target="_blank" href="https://savar.is-a.dev/work/">More</a>
+	  <div className="flex items-center gap-2 text-xs font-mono text-neutral-500">
+	     <a className="sm:flex gap-[8px]" target="_blank" href="https://github.com/savar95x/url-shortner">
+	       <Github className="w-3 h-3 m-auto" />
+	       <span className="hidden sm:inline uppercase">Source</span>
+	     </a>
+            <span className="text-neutral-700 inline">/</span>
+	     <a className="text-white flex gap-[8px]" target="_blank" href="https://github.com/savar95x/url-shortner">
+	       <span className="inline uppercase">More</span>
+	       <ExternalLink className="w-3 h-3 m-auto" />
+	     </a>
           </div>
         </div>
         <div className="flex items-center gap-2 px-3 py-1 rounded bg-[#111] border border-[#222]">
