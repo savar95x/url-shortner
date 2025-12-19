@@ -196,7 +196,7 @@ export default function App() {
 	       <span className="hidden sm:inline uppercase">Source</span>
 	     </a>
             <span className="text-neutral-700 inline">/</span>
-	     <a className="text-white flex gap-[8px]" target="_blank" href="https://github.com/savar95x/url-shortner">
+	     <a className="text-white flex gap-[8px]" target="_blank" href="https://savar.is-a.dev/work/">
 	       <span className="inline uppercase">More</span>
 	       <ExternalLink className="w-3 h-3 m-auto" />
 	     </a>
