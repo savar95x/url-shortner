@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   ArrowRight, Activity, Terminal, Database, 
-  Zap, Play, Layout, Server, Copy, Loader2 
+  Zap, Play, Layout, Server, Copy, Loader2, Trash2 
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell 
 } from 'recharts';
 
 // --- CONFIGURATION ---
+// const API_BASE = "http://localhost:8000"; 
 const API_BASE = "https://url-shortner-backend-bhvv.onrender.com"; 
 const ROUTER_BASE = "";
 
@@ -18,14 +19,13 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [analytics, setAnalytics] = useState([]);
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const [isWakingUp, setIsWakingUp] = useState(true); // New state for initial connection
+  const [isWakingUp, setIsWakingUp] = useState(true); 
   const logsEndRef = useRef(null);
 
   useEffect(() => {
     logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [logs]);
 
-  // --- DEBUGGING ON MOUNT ---
   useEffect(() => {
     addLog(`Configured API: ${API_BASE}`, "system");
   }, []);
@@ -77,13 +77,15 @@ export default function App() {
   const fetchData = async () => {
     if (getRelativePath().length > 0) return;
     try {
-      const urlsRes = await fetch(`${API_BASE}/api/urls`);
+      // UPDATED: Added { cache: 'no-store' } to force fresh data
+      const urlsRes = await fetch(`${API_BASE}/api/urls`, { cache: 'no-store' });
       if (urlsRes.ok) {
         const data = await urlsRes.json();
         setGeneratedLinks(data);
-        setIsWakingUp(false); // Backend is awake!
+        setIsWakingUp(false);
       }
-      const statsRes = await fetch(`${API_BASE}/api/analytics`);
+      
+      const statsRes = await fetch(`${API_BASE}/api/analytics`, { cache: 'no-store' });
       if (statsRes.ok) {
         const data = await statsRes.json();
         setAnalytics(data);
