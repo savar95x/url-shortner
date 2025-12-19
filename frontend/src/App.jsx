@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   ArrowRight, Activity, Terminal, Database, 
-  Zap, Play, Layout, Server, Copy, Loader2, Trash2 
+  Zap, Play, ExternalLink, Github, Server, Copy, Loader2, Trash2 
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell 
@@ -191,10 +191,11 @@ export default function App() {
         <div className="flex items-center gap-4">
           <a href="https://savar.is-a.dev" target="_blank" rel="noopener noreferrer" className="font-serif italic text-lg tracking-wide pr-4 border-r border-[#222] hover:text-white transition-colors">Savar</a>
           <div className="flex items-center gap-2 text-xs font-mono text-neutral-500">
-            <Layout className="w-3 h-3" />
-            <span className="hidden sm:inline">PRODUCTION</span>
+            <Github className="w-3 h-3" />
+            <a className="hidden sm:inline uppercase" target="_blank" href="https://github.com/savar95x/url-shortner">Source</a>
             <span className="text-neutral-700 hidden sm:inline">/</span>
-            <span className="text-white">DASHBOARD</span>
+            <ExternalLink color="white" className="w-3 h-3" />
+            <a className="text-white uppercase" target="_blank" href="https://savar.is-a.dev/work/">More</a>
           </div>
         </div>
         <div className="flex items-center gap-2 px-3 py-1 rounded bg-[#111] border border-[#222]">
@@ -259,7 +260,11 @@ export default function App() {
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={analytics}>
                     <XAxis dataKey="name" stroke="#333" fontSize={10} tickLine={false} axisLine={false} />
-                    <Tooltip cursor={{fill: '#ffffff05'}} contentStyle={{ backgroundColor: '#111', border: '1px solid #333', fontSize: '11px', color: '#fff' }} />
+                    <Tooltip 
+                      cursor={{fill: '#ffffff05'}} 
+                      contentStyle={{ backgroundColor: '#0a0a0a', border: '1px solid #333', fontSize: '11px', color: '#e5e5e5' }} 
+                      itemStyle={{ color: '#e5e5e5' }} 
+                    />
                     <Bar dataKey="clicks" barSize={40}>
                       {analytics.map((entry, index) => <Cell key={`cell-${index}`} fill={['#3b82f6', '#10b981', '#6366f1'][index % 3]} />)}
                     </Bar>
