@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   ArrowRight, Activity, Terminal, Database, 
-  Zap, Play, ExternalLink, Github, Server, Copy, Loader2, Trash2 
+  Zap, Play, ExternalLink, Github, Copy, Loader2, Info
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell 
@@ -77,11 +77,11 @@ export default function App() {
   const fetchData = async () => {
     if (getRelativePath().length > 0) return;
     try {
-      // UPDATED: Added { cache: 'no-store' } to force fresh data
       const urlsRes = await fetch(`${API_BASE}/api/urls`, { cache: 'no-store' });
       if (urlsRes.ok) {
         const data = await urlsRes.json();
         setGeneratedLinks(data);
+        // Only set waking up to false if we successfully got data
         setIsWakingUp(false);
       }
       
@@ -92,6 +92,9 @@ export default function App() {
       }
     } catch (err) {
       console.warn("Polling failed - Backend might be sleeping", err);
+      // If fetch fails, we assume it might be because server is sleeping/down
+      // but we don't reset isWakingUp to true automatically to avoid flashing UI,
+      // unless we want to handle disconnection states.
     }
   };
 
@@ -190,16 +193,16 @@ export default function App() {
       <header className="h-14 border-b border-[#222] flex items-center justify-between px-4 bg-[#0a0a0a] shrink-0">
         <div className="flex items-center gap-4">
           <a href="https://savar.is-a.dev" target="_blank" rel="noopener noreferrer" className="font-serif italic text-lg tracking-wide pr-4 border-r border-[#222] hover:text-white transition-colors">Savar</a>
-	  <div className="flex items-center gap-2 text-xs font-mono text-neutral-500">
-	     <a className="sm:flex gap-[8px]" target="_blank" href="https://github.com/savar95x/url-shortner">
-	       <Github className="w-3 h-3 m-auto" />
-	       <span className="hidden sm:inline uppercase">Source</span>
-	     </a>
+      <div className="flex items-center gap-2 text-xs font-mono text-neutral-500">
+         <a className="sm:flex gap-[8px]" target="_blank" href="https://github.com/savar95x/url-shortner">
+           <Github className="w-3 h-3 m-auto" />
+           <span className="hidden sm:inline uppercase">Source</span>
+         </a>
             <span className="text-neutral-700 inline">/</span>
-	     <a className="text-white flex gap-[8px]" target="_blank" href="https://savar.is-a.dev/work/">
-	       <span className="inline uppercase">More</span>
-	       <ExternalLink className="w-3 h-3 m-auto" />
-	     </a>
+         <a className="text-white flex gap-[8px]" target="_blank" href="https://savar.is-a.dev/work/">
+           <span className="inline uppercase">More</span>
+           <ExternalLink className="w-3 h-3 m-auto" />
+         </a>
           </div>
         </div>
         <div className="flex items-center gap-2 px-3 py-1 rounded bg-[#111] border border-[#222]">
@@ -209,6 +212,23 @@ export default function App() {
            </span>
         </div>
       </header>
+
+      {/* --- WAKING UP BANNER --- */}
+      {isWakingUp && (
+        <div className="bg-[#1a1500] border-b border-yellow-900/30 px-4 py-3 flex items-start sm:items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-500">
+          <div className="p-2 bg-yellow-900/20 rounded-full shrink-0">
+            <Loader2 className="w-4 h-4 text-yellow-500 animate-spin" />
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs font-mono w-full">
+            <span className="text-yellow-500 font-bold uppercase tracking-wider whitespace-nowrap">Server Waking Up</span>
+            <span className="text-yellow-200/60 hidden sm:inline">|</span>
+            <span className="text-yellow-100/70 leading-relaxed">
+              The backend is spinning up on a free instance. Initial connection may take up to <span className="text-white font-semibold">60 seconds</span>.
+            </span>
+          </div>
+        </div>
+      )}
+
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
         <div className="w-full md:w-[450px] border-b md:border-b-0 md:border-r border-[#222] flex flex-col bg-[#080808] h-1/2 md:h-full">
           <div className="p-6 border-b border-[#222]">
@@ -216,7 +236,7 @@ export default function App() {
             <form onSubmit={handleShorten} className="space-y-4">
               <input type="url" required placeholder="https://..." className="w-full bg-[#0f0f0f] border border-[#222] rounded p-3 text-sm font-mono text-white focus:border-blue-900 focus:outline-none" value={longUrl} onChange={(e) => setLongUrl(e.target.value)} />
               <button disabled={loading || isWakingUp} className="w-full bg-white text-black hover:bg-neutral-200 disabled:opacity-50 text-xs font-bold uppercase tracking-widest py-3 rounded flex items-center justify-center gap-2">
-                {isWakingUp ? "Server Waking Up..." : loading ? "Processing..." : "Shorten URL"} 
+                {isWakingUp ? "Waiting for Server..." : loading ? "Processing..." : "Shorten URL"} 
                 {isWakingUp ? <Loader2 className="w-3 h-3 animate-spin" /> : <ArrowRight className="w-3 h-3" />}
               </button>
             </form>
@@ -224,7 +244,7 @@ export default function App() {
           <div className="flex-1 flex flex-col overflow-hidden">
              <div className="px-6 py-3 border-b border-[#222] bg-[#0a0a0a] flex justify-between items-center"><h2 className="text-xs font-mono text-neutral-500 uppercase flex items-center gap-2"><Database className="w-3 h-3" /> Records</h2></div>
              <div className="flex-1 overflow-y-auto p-2 space-y-1">
-                {generatedLinks.length === 0 && <div className="text-center py-8 text-neutral-700 text-xs font-mono">{isWakingUp ? "Connecting to Backend..." : "No links yet"}</div>}
+                {generatedLinks.length === 0 && <div className="text-center py-8 text-neutral-700 text-xs font-mono">{isWakingUp ? "Connecting..." : "No links yet"}</div>}
                 {generatedLinks.map((link) => (
                   <div key={link.short_code} className="group p-3 rounded border border-transparent hover:border-[#333] hover:bg-[#111] cursor-default">
                     <div className="flex justify-between items-center mb-1">

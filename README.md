@@ -1,9 +1,7 @@
-### **URL Shortener**
-
+# URL Shortener
 A full-stack high performant URL shortener built to demonstrate scalable, production-ready system architecture. This project mimics services like Bit.ly by implementing advanced caching patterns and a modern serverless stack.
 
-**Key Features:**
-
+## Key Features
 * **Optimized Performance:** Uses **Upstash (Redis)** for high-speed caching (Cache-Aside pattern) to serve redirects in milliseconds, minimizing database hits.
 * **Scalable Storage:** Powered by **Neon (Serverless PostgreSQL)** to handle persistent data with auto-scaling capabilities.
 * **Collision-Free Algorithm:** Implements **Base62 encoding** to convert Database IDs into unique short strings.
