@@ -105,6 +105,10 @@ def get_analytics(db: Session = Depends(get_db)):
         .group_by(AnalyticsItem.country).all()
     return [{"name": r[0], "clicks": r[1]} for r in results]
 
+@app.get("/health")
+async def health_check():
+    return {"status": "active"}
+
 @app.post("/shorten")
 def shorten_url(item: URLCreate, db: Session = Depends(get_db)):
     # 0. CHECK IF EXISTS (Prevent Duplicates)
