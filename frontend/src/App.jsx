@@ -8,8 +8,8 @@ import {
 } from 'recharts';
 
 // --- CONFIGURATION ---
-// const API_BASE = "http://localhost:8000"; 
-const API_BASE = "https://url-shortner-backend-bhvv.onrender.com"; 
+const API_BASE = "http://localhost:8000"; 
+// const API_BASE = "https://url-shortner-backend-bhvv.onrender.com"; 
 const ROUTER_BASE = "";
 
 export default function App() {
