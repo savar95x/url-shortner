@@ -45,7 +45,7 @@ app = FastAPI(title="The Scaler")
 
 origins = [
         "http://localhost:5173",
-        "https://savar-shortener.vercel.app",
+        "https://url-shortner-backend-rose.vercel.app/",
         "https://apps.savar.is-a.dev",
 ]
 
